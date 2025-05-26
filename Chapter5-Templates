@@ -1,0 +1,157 @@
+# Chapter 5: Templates
+
+Welcome back, Vibe CEO! In our journey through the BMAD Method, we've learned about the overall [BMAD Method](01_bmad_method_.md) itself, the [Orchestrator](02_orchestrator_.md) that manages the workflow, the specialized [Agents (Personas)](03_agents__personas__.md) who are your AI team, and the central [Knowledge Base](04_knowledge_base_.md) they use for guidance.
+
+Now, let's talk about making sure the _stuff_ the agents create is consistent and well-organized. Imagine asking different people to write a recipe for your favorite dish. Without a standard format, one might just list ingredients, another might write a long story, and a third might just give vague instructions. It would be hard to follow any of them!
+
+In software development, the "stuff" is project documentation and artifacts like a Project Brief describing the initial idea, a Product Requirements Document (PRD) listing features, or a technical Architecture Document. Just like recipes, these documents need structure to be useful, especially when different AI agents (or even different human team members) are contributing to them.
+
+This is where **Templates** come in.
+
+## What are Templates?
+
+Think of Templates in the BMAD Method as **pre-formatted structures** or **standardized forms** for the documents and artifacts created during your project's workflow. They provide a blueprint that the AI agents follow when generating content.
+
+Instead of starting from a blank page, an agent starts with a Template. This Template already has headings, sections, placeholders, and sometimes even notes or instructions embedded within it. The agent's job is then to _fill in_ the relevant information according to the Template's structure.
+
+For our To-Do List app example, when you ask the **Analyst** agent to create a Project Brief, it doesn't just freestyle. It loads the Project Brief **Template**, which might already have sections like "Introduction / Problem Statement," "Vision & Goals," and "Key Features / Scope." The Analyst agent then guides you or uses information it has to fill in those specific sections.
+
+## Why Use Templates?
+
+Templates are crucial for several reasons:
+
+1.  **Consistency:** Every document of the same type (like all Project Briefs) will have the same basic structure, making them predictable and easy to read, no matter which agent generated them.
+2.  **Completeness:** Templates act as a checklist to ensure important sections aren't missed. If the Project Brief template has a "Target Audience" section, the Analyst agent will be prompted to address it.
+3.  **Efficiency:** Agents don't have to decide on a structure from scratch. They have a ready-made outline to follow.
+4.  **Clear Expectations:** Both you (the Vibe CEO) and the agents know the expected output format for different types of documents.
+
+They help turn the raw output of an AI into structured, usable project documentation.
+
+## How Agents Use Templates
+
+Let's trace how an agent, guided by the [Orchestrator](02_orchestrator_.md), uses a Template. Imagine you need to create the initial Project Brief for your To-Do List app idea.
+
+1.  You interact with the [Orchestrator](02_orchestrator_.md) and indicate you want to start planning or create a brief.
+2.  The Orchestrator identifies that the **Analyst** agent is responsible for creating Project Briefs, based on its configuration and the [Knowledge Base](04_knowledge_base_.md).
+3.  The Orchestrator loads the Analyst persona instructions for the AI. These instructions tell the Analyst _how_ to create a Project Brief and, importantly, _which Template file_ to use (e.g., `project-brief-tmpl.md`).
+4.  The AI, now acting as the Analyst, internally accesses the content of the `project-brief-tmpl.md` file.
+5.  The Analyst agent presents the structure of the Template to you (often by starting the conversation by asking questions to fill in sections of the template) or begins populating it with information you've already provided about your project idea. It will fill in placeholders like `{Project Name}` and write content under the predefined headings.
+6.  You collaborate with the Analyst agent, refining the content until the Project Brief document is complete, following the structure provided by the Template.
+
+Here’s a simplified flow:
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Orchestrator as BMAD Orchestrator
+    participant Analyst as Analyst Agent
+    participant TemplateFiles as Template Files
+    participant ProjectBriefDoc as Project Brief Document
+
+    User->>Orchestrator: "Help me create a project brief."
+    Orchestrator->>Orchestrator: Determines Analyst is needed
+    Orchestrator->>Analyst: **Becomes Analyst** (Loads Persona)
+    Analyst->>Analyst: Reads instructions for creating Brief
+    Analyst->>TemplateFiles: Requests "project-brief-tmpl.md" content
+    TemplateFiles-->>Analyst: Provides template structure and content
+    Analyst->>Analyst: Initializes document using template
+    Analyst-->>User: "Okay, I'm ready to create the brief. What's the project name?" (Asks for info to fill template)
+    User->>Analyst: Provides project details
+    Analyst->>ProjectBriefDoc: Writes content into template structure
+    Analyst-->>User: Presents draft Project Brief
+```
+
+The Template file acts as the starting point and structural guide for the agent's output.
+
+## Under the Hood: The Template Files
+
+Templates in the BMAD Method are simply text files written in Markdown format. They contain the standard structure, headings, and any boilerplate text or instructions that should appear in the final document.
+
+You can find these template files in the `bmad-agent/templates/` directory.
+
+```text
+bmad-agent/
+└── templates/
+    ├── architecture-tmpl.md
+    ├── doc-sharding-tmpl.md
+    ├── front-end-architecture-tmpl.md
+    ├── front-end-spec-tmpl.md
+    ├── prd-tmpl.md
+    ├── project-brief-tmpl.md
+    └── story-tmpl.md
+    └── ... other templates ...
+```
+
+Let's look at a very small snippet from the `bmad-agent/templates/project-brief-tmpl.md` file:
+
+```markdown
+# Project Brief: {Project Name}
+
+## Introduction / Problem Statement
+
+{Describe the core idea, the problem being solved, or the opportunity being addressed. Why is this project needed?}
+
+## Vision & Goals
+
+- **Vision:** {Describe the high-level desired future state or impact of this project.}
+- **Primary Goals:** {List 2-5 specific, measurable, achievable, relevant, time-bound (SMART) goals for the Minimum Viable Product (MVP).}
+  - Goal 1: ...
+  - Goal 2: ...
+    ...
+```
+
+This shows the basic structure: a main heading `# Project Brief:`, followed by a placeholder `{Project Name}`, then sections with subheadings (`## Introduction / Problem Statement`, `## Vision & Goals`), and bullet points. The text within curly braces `{...}` are placeholders or instructions for the agent, telling it what kind of information to put there.
+
+The agent, when using this template, reads this Markdown content and understands it as the desired structure for the output document. It then replaces `{Project Name}` with the actual project name and generates text under the "Introduction / Problem Statement" heading based on the user's input about the problem.
+
+How does the agent know to use _this specific_ file? The agent's instructions or the Orchestrator's configuration will include the file path.
+
+For example, the Web Orchestrator's configuration (`web-bmad-orchestrator-agent.cfg.md`) defines the Analyst agent and lists the resources it uses:
+
+```markdown
+## Title: Analyst
+
+...
+
+- Description: "Research assistant, brain storming coach, requirements gathering, project briefs."
+- Persona: "personas#analyst"
+- Tasks:
+  ...
+- Checklists:
+  ...
+- Templates: # <-- Here are the templates this agent might use
+  - [Project Brief](templates#project-brief-tmpl) # <-- Links to the project-brief-tmpl.md
+    ...
+```
+
+This configuration tells the Orchestrator (and implicitly, the AI model when embodying the Analyst) that the template named "Project Brief" corresponds to the file `templates#project-brief-tmpl` (which maps to `bmad-agent/templates/project-brief-tmpl.md`). When the Analyst is instructed to create a project brief, it knows exactly which template file to load and follow.
+
+The implementation of Templates is simply providing these pre-written Markdown files and configuring the agents to know where they are and when to use them. The power comes from the AI model's ability to read, understand, and fill in the structure provided by the template.
+
+## Examples of Templates in BMAD
+
+The BMAD Method includes various templates for common project artifacts:
+
+| Template Name                           | File                             | Used By Agent(s)    | Purpose                                                                 |
+| :-------------------------------------- | :------------------------------- | :------------------ | :---------------------------------------------------------------------- |
+| **Project Brief**                       | `project-brief-tmpl.md`          | Analyst             | Initial document outlining the project idea, problem, and goals.        |
+| **Product Requirements Document (PRD)** | `prd-tmpl.md`                    | Product Manager     | Details functional and non-functional requirements, epics, and stories. |
+| **Architecture Document**               | `architecture-tmpl.md`           | Architect           | Defines the technical structure of the system.                          |
+| **Frontend Architecture**               | `front-end-architecture-tmpl.md` | Design Architect    | Details the technical structure specifically for the UI.                |
+| **UI/UX Specification**                 | `front-end-spec-tmpl.md`         | Design Architect    | Outlines user flows, mockups, and visual design notes for the UI.       |
+| **Story**                               | `story-tmpl.md`                  | PO, SM              | Standard format for individual user stories for development.            |
+| **Document Sharding Plan**              | `doc-sharding-tmpl.md`           | PO, Architect, etc. | Instructs agents on how to break down large documents.                  |
+
+These templates ensure that regardless of which agent helps you create these documents, they will have a consistent, professional structure, making the entire project documentation library organized and easy to navigate.
+
+## Conclusion
+
+Templates are the backbone of consistent documentation in the BMAD Method. By providing pre-defined Markdown files with standard structures and placeholders, they guide the AI agents in generating key project artifacts like Project Briefs and PRDs. This ensures that all your project documents are organized, comprehensive, and easy for both you and the AI team to understand and use throughout the development process.
+
+Now that we know how documents are structured using templates, let's look at another important tool the agents use to ensure quality and completeness: [Checklists](06_checklists_.md)!
+
+[Checklists](06_checklists_.md)
+
+---
+
+<sub><sup>Generated by [AI Codebase Knowledge Builder](https://github.com/The-Pocket/Tutorial-Codebase-Knowledge).</sup></sub> <sub><sup>**References**: [[1]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/README.md), [[2]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/data/bmad-kb.md), [[3]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/templates/architecture-tmpl.md), [[4]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/templates/doc-sharding-tmpl.md), [[5]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/templates/front-end-architecture-tmpl.md), [[6]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/templates/front-end-spec-tmpl.md), [[7]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/templates/prd-tmpl.md), [[8]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/templates/project-brief-tmpl.md), [[9]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/templates/story-tmpl.md), [[10]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/legacy-archive/V1/ai/templates/architecture-template.md), [[11]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/legacy-archive/V1/ai/templates/prd-template.md), [[12]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/legacy-archive/V1/ai/templates/story-template.md), [[13]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/legacy-archive/V2/docs/templates/api-reference.md), [[14]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/legacy-archive/V2/docs/templates/architecture.md), [[15]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/legacy-archive/V2/docs/templates/coding-standards.md), [[16]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/legacy-archive/V2/docs/templates/data-models.md), [[17]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/legacy-archive/V2/docs/templates/environment-vars.md), [[18]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/legacy-archive/V2/docs/templates/epicN.md), [[19]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/legacy-archive/V2/docs/templates/prd.md), [[20]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/legacy-archive/V2/docs/templates/project-brief.md), [[21]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/legacy-archive/V2/docs/templates/project-structure.md), [[22]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/legacy-archive/V2/docs/templates/story-template.md), [[23]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/legacy-archive/V2/docs/templates/tech-stack.md), [[24]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/legacy-archive/V2/docs/templates/ui-ux-spec.md)</sup></sub>

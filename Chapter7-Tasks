@@ -1,0 +1,188 @@
+# Chapter 7: Tasks
+
+Welcome back, Vibe CEO! In our journey through the BMAD Method, we've built up quite the team and resources: we know the overall [BMAD Method](01_bmad_method_.md), we have our [Orchestrator](02_orchestrator_.md) to manage things, our specialized [Agents (Personas)](03_agents__personas_.md) ready to work, a central [Knowledge Base](04_knowledge_base_.md) for wisdom, [Templates](05_templates_.md) for consistent documents, and [Checklists](06_checklists_.md) to ensure quality.
+
+Now, let's talk about how we tell these expert Agents _exactly_ what to do for specific, less common, but often complex jobs.
+
+Imagine you have a brilliant chef (your Agent). They know how to cook generally, but sometimes you need them to make a very specific dish that requires a detailed, multi-step recipe. You wouldn't teach them that recipe _every time_ you wanted the dish, and you wouldn't write the full recipe into their basic job description. Instead, you'd hand them a **specific recipe card** just for that dish.
+
+In the BMAD Method, **Tasks** are those specific recipe cards.
+
+## What are Tasks?
+
+**Tasks** are **self-contained instruction sets** for performing particular jobs or functions. Think of them as mini-manuals or detailed step-by-step guides that an AI Agent can pick up and follow _on demand_.
+
+Instead of putting instructions for _every possible thing_ an Agent might _ever_ do into its main persona definition (which would make the persona huge and unwieldy), complex or less frequent jobs are defined as separate **Tasks**.
+
+This allows the main Agent personas to stay focused on their core role (like "Analyst" or "Developer") while still being capable of performing many different specific operations by simply being given the instructions defined in a relevant Task file.
+
+For example:
+
+- Creating a detailed Product Requirements Document (PRD) is a specific job that the Product Manager Agent needs to do. This is defined as the `create-prd.md` Task.
+- Running a checklist against a document is a specific job that several Agents might need to do (like the PM, Architect, or PO). This is defined as the `checklist-run-task.md` Task.
+
+Any capable Agent can be asked to "execute" a Task by loading and following the instructions in the Task file.
+
+## Why Use Tasks?
+
+Using separate Task files is beneficial because it helps:
+
+1.  **Keep Agents Lean:** The core Agent persona instructions (`.md` files in `bmad-agent/personas/`) can remain focused on the Agent's role and general behavior, without being bloated by instructions for every single procedure.
+2.  **Promote Reusability:** The same Task (like running a checklist) can potentially be executed by different Agents if their capabilities allow.
+3.  **Provide On-Demand Functionality:** Tasks enable Agents to perform specific jobs when needed, without those instructions being active or taking up context window space all the time.
+4.  **Structure Complex Operations:** Tasks break down multi-step processes (like creating a PRD or handling a project change) into clear, sequential instructions for the AI to follow.
+
+They provide a modular way to add capabilities to your AI team.
+
+## How Agents Use Tasks
+
+Let's see how an Agent uses a Task. Imagine you are working with the **Product Manager** Agent and you need to create the Product Requirements Document (PRD) for your To-Do List app.
+
+1.  You interact with the [Orchestrator](02_orchestrator_.md) (or directly with the PM Agent if using a standalone config) and request to create the PRD. You might say, "Okay, I need the PRD for the To-Do app."
+2.  The Orchestrator identifies that the **Product Manager** Agent is responsible for PRDs and knows (from its config or the PM's persona) that the `create-prd.md` Task is used for this.
+3.  The Orchestrator (or the PM Agent itself) loads the content of the `create-prd.md` Task file.
+4.  The AI, now acting as the Product Manager, reads the instructions in the `create-prd.md` file. These instructions tell it the steps to follow, the [Templates](05_templates_.md) to use (like `prd-tmpl.md`), the [Checklists](06_checklists_.md) to potentially run (`pm-checklist.md`), and the specific questions to ask you to gather information for the PRD.
+5.  The PM Agent executes the Task instructions step-by-step, interacting with you as needed to fill out the PRD [Template](05_templates_.md) and follow the process defined in the Task.
+6.  Once all steps in the Task are completed (including potentially running the checklist and getting your approval), the Task is finished, and the PRD is ready.
+
+Here's a simplified flow:
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Orchestrator as BMAD Orchestrator
+    participant PMAgent as Product Manager Agent
+    participant TaskFiles as Task Files
+    participant PRDDoc as PRD Document
+
+    User->>Orchestrator: "Create the PRD for the To-Do app."
+    Orchestrator->>Orchestrator: Determines PM is needed, identifies PRD task
+    Orchestrator->>PMAgent: **Becomes PM** (Loads Persona)
+    PMAgent->>TaskFiles: Accesses "create-prd.md" content
+    TaskFiles-->>PMAgent: Provides Task Instructions
+    PMAgent->>PMAgent: Reads and follows Task instructions
+    PMAgent-->>User: "Okay, I'm the PM. Let's start the PRD. What's the project name?" (Follows Task step 1)
+    User->>PMAgent: Provides details
+    PMAgent->>PRDDoc: Populates PRD (using Template, guided by Task)
+    PMAgent->>TaskFiles: Accesses "pm-checklist.md" content (as instructed by Task)
+    PMAgent->>PMAgent: Runs Checklist Validation (as instructed by Task)
+    PMAgent-->>User: Presents draft PRD and checklist results (as instructed by Task)
+```
+
+The AI model, guided by the Agent Persona, reads the Task file and treats its content as a script or procedure to execute.
+
+## Under the Hood: The Task Files
+
+Just like [Templates](05_templates_.md) and [Checklists](06_checklists_.md), Tasks in the BMAD Method are simply Markdown files containing detailed instructions.
+
+Most Task files are located in the `bmad-agent/tasks/` directory. However, some checklist-related tasks might reside in `bmad-agent/checklists/` if they are primarily instructions on _how_ to run a checklist, rather than a process like creating a document.
+
+```text
+bmad-agent/
+└── tasks/
+    ├── checklist-run-task.md     <-- Example Task
+    ├── core-dump.md
+    ├── correct-course.md
+    ├── create-ai-frontend-prompt.md
+    ├── create-architecture.md
+    ├── create-deep-research-prompt.md
+    ├── create-frontend-architecture.md
+    ├── create-next-story-task.md <-- Example Task
+    ├── create-prd.md             <-- Example Task
+    ├── create-uxui-spec.md
+    ├── doc-sharding-task.md
+    └── library-indexing-task.md
+    └── ... other tasks ...
+```
+
+Let's look at the very beginning of the `bmad-agent/tasks/create-prd.md` file to see its structure:
+
+```markdown
+# PRD Generate Task
+
+## Purpose
+
+- Transform inputs into core product definition documents conforming to the `prd-tmpl` template.
+- Define clear MVP scope focused on essential functionality.
+- Provide foundation for Architect and eventually AI dev agents.
+
+Remember as you follow the upcoming instructions:
+
+- Your documents form the foundation for the entire development process.
+  ... (more instructions) ...
+```
+
+This shows a clear title, purpose, and then numbered or bulleted instructions for the AI to follow.
+
+Similarly, the `bmad-agent/tasks/checklist-run-task.md` file starts by explaining its purpose and then lists the steps for the agent to execute:
+
+```markdown
+# Checklist Validation Task
+
+This task provides instructions for validating documentation against checklists. The agent should follow these instructions to ensure thorough and systematic validation of documents.
+
+## Context
+
+The BMAD Method uses various checklists to ensure quality and completeness of different artifacts. The mapping between checklists and their required documents is defined in `checklist-mappings`.
+... (more context and detailed instructions) ...
+```
+
+These are the scripts the AI model follows when it is directed to perform a specific Task.
+
+## How Agents Know Which Task File to Use
+
+An Agent knows which Task file to use in a few ways:
+
+1.  **Agent Configuration:** The [Orchestrator's](02_orchestrator_.md) configuration (`.cfg.md` files) explicitly lists which Tasks are associated with which Agents.
+    - Example: The Web Orchestrator config lists `tasks#create-prd` for the Product Manager Agent.
+2.  **Agent Persona Instructions:** An Agent's main persona instructions (`.md` file in `bmad-agent/personas/`) might mention specific tasks they perform or reference Task files.
+3.  **User Request:** You, as the User, might explicitly ask an Agent to perform a task by name (if the Agent understands that command) or even by providing the content of the Task file itself to a capable Agent. The `README.md` mentions that Task files can be used as "one off commands with a vanilla agent... by just referencing the task and asking the agent to perform it."
+
+Let's look at a snippet from the IDE Orchestrator's config (`bmad-agent/ide-bmad-orchestrator.cfg.md`):
+
+```markdown
+## Title: Product Owner AKA PO
+
+- Name: Jimmy
+- Customize: ""
+- Description: "Jack of many trades, from PRD Generation and maintenance..."
+- Persona: "po.md"
+- Tasks: # <-- List of tasks this agent can perform
+  - [Create PRD](create-prd.md) # <-- Links the task name to the file
+  - [Create Next Story](create-next-story-task.md) # <-- Links to another task file
+  # ... more tasks ...
+```
+
+This configuration tells the IDE Orchestrator that when it is acting as the "Product Owner" agent, it is capable of performing the "Create PRD" task, and the instructions for that task are in the `create-prd.md` file.
+
+The underlying AI model's ability to read and follow the Markdown instructions within these Task files is what enables it to execute complex procedures on your behalf.
+
+## Examples of Tasks in BMAD
+
+The `bmad-agent/tasks/` directory contains many different tasks covering various parts of the software development lifecycle. Here are a few examples:
+
+| Task File Name              | Primary Agent(s)       | Purpose                                                                      |
+| :-------------------------- | :--------------------- | :--------------------------------------------------------------------------- |
+| `create-prd.md`             | Product Manager        | Guides the creation of the Product Requirements Document.                    |
+| `create-architecture.md`    | Architect              | Guides the design of the technical architecture.                             |
+| `create-uxui-spec.md`       | Design Architect       | Guides the definition of UI/UX specifications.                               |
+| `create-next-story-task.md` | PO, SM                 | Guides the process of identifying and drafting the next user story.          |
+| `checklist-run-task.md`     | Various (PO, SM, etc.) | Provides instructions for validating a document against a checklist.         |
+| `correct-course.md`         | PO, SM                 | Guides the process of analyzing and proposing solutions for project changes. |
+| `doc-sharding-task.md`      | Various                | Provides instructions for breaking down large documents into smaller files.  |
+| `library-indexing-task.md`  | Various                | Guides the process of updating the `docs/index.md` file.                     |
+| `core-dump.md`              | Orchestrator/Any       | Guides the process of saving the session context.                            |
+
+These Task files provide the detailed "how-to" for many of the specific operations you might ask your AI team to perform.
+
+## Conclusion
+
+Tasks are the detailed instruction sets that enable AI Agents in the BMAD Method to perform specific, often multi-step, jobs like creating a PRD, running a checklist, or planning how to handle a project change. By defining these procedures in separate, reusable Markdown files, the BMAD Method keeps Agent personas focused and allows any capable Agent to execute a wide range of functions on demand. They are the recipes your AI chefs follow for specific dishes, ensuring consistent and structured execution of complex operations.
+
+With Agents capable of executing Tasks, using [Templates](05_templates_.md) to structure outputs, and employing [Checklists](06_checklists_.md) for validation, the result of their work is often tangible project outputs. In the next chapter, we'll look at these outputs – the [Documentation/Artifacts](08_documentation_artifacts_.md).
+
+[Documentation/Artifacts](08_documentation_artifacts_.md)
+
+---
+
+<sub><sup>Generated by [AI Codebase Knowledge Builder](https://github.com/The-Pocket/Tutorial-Codebase-Knowledge).</sup></sub> <sub><sup>**References**: [[1]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/README.md), [[2]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/data/bmad-kb.md), [[3]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/tasks/checklist-run-task.md), [[4]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/tasks/core-dump.md), [[5]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/tasks/correct-course.md), [[6]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/tasks/create-ai-frontend-prompt.md), [[7]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/tasks/create-architecture.md), [[8]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/tasks/create-deep-research-prompt.md), [[9]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/tasks/create-frontend-architecture.md), [[10]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/tasks/create-next-story-task.md), [[11]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/tasks/create-prd.md), [[12]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/tasks/create-uxui-spec.md), [[13]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/tasks/doc-sharding-task.md), [[14]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/tasks/library-indexing-task.md)</sup></sub>

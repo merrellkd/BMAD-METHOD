@@ -1,0 +1,174 @@
+# Chapter 6: Checklists
+
+Welcome back, Vibe CEO! So far in our journey through the BMAD Method, we've explored the structured process itself ([BMAD Method](01_bmad_method_.md)), the manager orchestrating the AI team ([Orchestrator](02_orchestrator_.md)), the specialized AI team members ([Agents (Personas)](03_agents__personas__.md)), the central information hub ([Knowledge Base](04_knowledge_base_.md)), and the standard formats used for documents ([Templates](05_templates_.md)).
+
+Now, imagine your team of AI agents has used a [Template](05_templates_.md) to draft an important document, like the Product Requirements Document (PRD) for your To-Do List app or the Architecture Document detailing its technical design. How do you (or the AI agent responsible) ensure that the document is complete, covers all the necessary points, and meets the expected quality standard before you move on?
+
+This is where **Checklists** come in.
+
+## What are Checklists?
+
+In the BMAD Method, **Checklists** are like **quality control inspection forms** or **Definition of Done lists** specifically designed for the work products (documents, plans, etc.) created by the AI agents. They are structured lists of criteria, questions, or required items that an agent (or you) can go through to verify that a specific task or document is truly complete and adheres to the method's standards.
+
+Think of them as a structured way to ask: "Did we remember everything?", "Does this meet the definition of 'done' for this stage?", or "Is this output high-quality according to our criteria?"
+
+For our To-Do List app, after the Product Manager agent drafts the PRD using the PRD [Template](05_templates_.md), it might then use the "Product Manager Requirements Checklist" to review the draft PRD. This checklist will prompt the agent to verify things like:
+
+- Are all core functional requirements covered?
+- Are non-functional requirements like performance and security addressed?
+- Are the Epics and Stories structured correctly?
+- Is the scope clearly defined?
+
+By systematically going through the list, the agent (and you, by reviewing the checklist results) can be confident that the PRD is thorough and ready for the next step.
+
+## Why Use Checklists?
+
+Checklists are essential in an AI-assisted workflow for several reasons:
+
+1.  **Ensure Quality:** They provide a consistent standard for evaluating the output of AI agents.
+2.  **Prevent Omissions:** They help catch missing requirements, architectural considerations, or other crucial details that might be overlooked.
+3.  **Structure Validation:** They give the AI agents a clear, step-by-step process for validating their own work or the work they are reviewing.
+4.  **Increase Confidence:** Knowing that a document or task has passed a detailed checklist gives everyone (especially you!) more confidence in its completeness and accuracy.
+5.  **Facilitate Handoffs:** When one agent's work (like a PRD) is needed by another agent (like the Architect or Product Owner), a validated checklist confirms the input is ready.
+6.  **Support "Definition of Done":** They embody the specific criteria that define when a particular artifact or phase is considered "done" and ready to progress.
+
+Without checklists, the quality and completeness of AI-generated outputs might vary, leading to potential issues later in the development process.
+
+## How Agents Use Checklists
+
+Checklists are typically used by an [Agent (Persona)](03_agents__personas__.md) _after_ they have completed a significant piece of work, like drafting a document.
+
+Here's a typical flow:
+
+1.  An agent (let's say the Product Manager) finishes creating a draft Product Requirements Document (PRD) for your To-Do app using the PRD [Template](05_templates_.md).
+2.  The Product Manager agent knows (from its persona instructions or a specific [Task](07_tasks_.md) it's executing) that it needs to validate the PRD before finalizing it.
+3.  The agent identifies the appropriate checklist for a PRD (the "Product Manager Requirements Checklist").
+4.  The AI agent internally accesses the content of the checklist file.
+5.  The agent then "goes through" the checklist items, comparing each criterion to the content of the drafted PRD. It's essentially performing a self-review or validation process based on the checklist's structure.
+6.  For each item on the checklist, the agent determines if the criterion is met based on the document's content and its own understanding (derived from the project context, [Knowledge Base](04_knowledge_base_.md), and its persona instructions).
+7.  The agent compiles the results of the checklist validation.
+8.  Finally, the agent presents the results of the checklist (often the checklist itself, filled out or summarized) to you, noting any items that are not met or require further attention. It might then ask for your review and approval based on the checklist's outcome.
+
+Here's a simplified diagram of the process:
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant PMAgent as Product Manager Agent
+    participant PRDDoc as PRD Document
+    participant PMChecklistFile as PM Checklist File
+
+    User->>PMAgent: "Finish the PRD for the To-Do app."
+    PMAgent->>PMAgent: Creates draft PRD (using Template)
+    PMAgent->>PMAgent: Knows to validate PRD (from instructions/task)
+    PMAgent->>PMChecklistFile: Accesses "pm-checklist.md" content
+    PMAgent->>PRDDoc: Reads and validates PRD content
+    Note over PMAgent: (Compares PRD content to checklist criteria)
+    PMAgent->>PMAgent: Compiles checklist results
+    PMAgent-->>User: Presents completed checklist validation results
+    User->>User: Reviews checklist and PRD
+```
+
+The agent uses the checklist file as a structured script for validating the output, ensuring key points are verified systematically.
+
+## Under the Hood: The Checklist Files
+
+Like [Templates](05_templates_.md) and the [Knowledge Base](04_knowledge_base_.md), Checklists in the BMAD Method are primarily simple Markdown files. They are structured with headings, subheadings, and list items, often using Markdown task list syntax (`- [ ]` for an unchecked item).
+
+You can find the checklist files in the `bmad-agent/checklists/` directory.
+
+```text
+bmad-agent/
+└── checklists/
+    ├── architect-checklist.md
+    ├── change-checklist.md
+    ├── frontend-architecture-checklist.md
+    ├── pm-checklist.md          <-- Example PM Checklist
+    ├── po-master-checklist.md
+    ├── story-dod-checklist.md   <-- Example Story DoD Checklist
+    └── story-draft-checklist.md <-- Example Story Draft Checklist
+```
+
+Let's look at a small snippet from the `bmad-agent/checklists/pm-checklist.md` file:
+
+```markdown
+# Product Manager (PM) Requirements Checklist
+
+This checklist serves as a comprehensive framework...
+
+## 1. PROBLEM DEFINITION & CONTEXT
+
+### 1.1 Problem Statement
+
+- [ ] Clear articulation of the problem being solved
+- [ ] Identification of who experiences the problem
+- [ ] Explanation of why solving this problem matters
+      ...
+
+## 4. FUNCTIONAL REQUIREMENTS
+
+### 4.1 Feature Completeness
+
+- [ ] All required features for MVP documented
+- [ ] Features have clear, user-focused descriptions
+- [ ] Feature priority/criticality indicated
+      ...
+```
+
+This shows the standard Markdown structure. The `[ ]` indicates an item that can be checked off. The AI agent, when performing the validation, reads these items and checks them against the document it has created. The final output presented to the user might show these checkboxes marked (`- [x]`) or summarize which sections passed and which didn't.
+
+How does an agent know _which_ checklist file to use for a specific document or task?
+
+1.  **Agent Instructions/Persona:** The core instructions for an agent (like the PM or Architect) might specify which checklists they are responsible for using for specific types of output.
+2.  **Tasks:** A specific [Task](07_tasks_.md) file (which guides an agent through a multi-step process) might include a step that explicitly tells the agent to run a specific checklist file.
+3.  **Configuration/Mappings:** The system might use configuration files (like `checklist-mappings.yml`) to associate checklist file names with the types of documents or tasks they validate.
+
+Let's look at a snippet from `bmad-agent/tasks/checklist-mappings.yml`:
+
+```yaml
+pm-checklist:
+  checklist_file: docs/checklists/pm-checklist.md
+  required_docs:
+    - prd.md
+  default_locations:
+    - docs/prd.md
+
+architect-checklist:
+  checklist_file: docs/checklists/architect-checklist.md
+  required_docs:
+    - architecture.md
+  default_locations:
+    - docs/architecture.md
+```
+
+This YAML file provides a mapping. When an agent (or the [Orchestrator](02_orchestrator_.md)) needs the `pm-checklist`, this mapping tells it which file (`docs/checklists/pm-checklist.md`) to load. It also indicates which documents are required for this checklist (`prd.md`) and where to typically find them (`docs/prd.md`). This helps the agent locate the checklist file and the document it needs to validate.
+
+The actual "checking" is done by the AI model based on its ability to understand the text in the checklist and compare it against the content of the document it's reviewing. The checklist file itself is just the set of criteria.
+
+## Examples of Checklists in BMAD
+
+The BMAD Method provides several predefined checklists aligned with the key artifacts and phases:
+
+| Checklist Name                                      | File                                 | Used By Agent(s)            | Purpose                                                                           |
+| :-------------------------------------------------- | :----------------------------------- | :-------------------------- | :-------------------------------------------------------------------------------- |
+| **PM Requirements Checklist**                       | `pm-checklist.md`                    | Product Manager             | Validate the completeness and quality of the Product Requirements Document (PRD). |
+| **Architect Solution Validation Checklist**         | `architect-checklist.md`             | Architect                   | Validate the technical architecture and design documentation.                     |
+| **Frontend Architecture Document Review Checklist** | `frontend-architecture-checklist.md` | Design Architect            | Validate the frontend-specific architecture document.                             |
+| **PO Validation Checklist**                         | `po-master-checklist.md`             | Product Owner               | Validate the overall plan (PRD, Architecture) before development begins.          |
+| **Story Draft Checklist**                           | `story-draft-checklist.md`           | Scrum Master, Product Owner | Validate that a user story contains enough information for a developer.           |
+| **Story Definition of Done (DoD) Checklist**        | `story-dod-checklist.md`             | Developer                   | Validate that a completed user story meets quality and completion criteria.       |
+| **Change Navigation Checklist**                     | `change-checklist.md`                | PO, SM, Dev, Arch, etc.     | Guide analysis and planning when a significant project change is needed.          |
+
+These checklists cover different stages and types of work, ensuring that validation is built into the BMAD process at key points.
+
+## Conclusion
+
+Checklists are crucial validation tools in the BMAD Method. They are structured lists of criteria that AI agents use to systematically verify the completeness and quality of project artifacts like PRDs, Architecture Documents, or individual user stories. By leveraging these simple Markdown files, the BMAD Method provides a clear, consistent way to ensure that the work produced by your AI team meets defined standards before you move forward, bringing confidence and rigor to the development process.
+
+With documentation structured by [Templates](05_templates_.md) and validated by Checklists, the AI agents are well-equipped to perform specific jobs. In the next chapter, we'll look at how these specific jobs are defined using [Tasks](07_tasks_.md).
+
+[Tasks](07_tasks_.md)
+
+---
+
+<sub><sup>Generated by [AI Codebase Knowledge Builder](https://github.com/The-Pocket/Tutorial-Codebase-Knowledge).</sup></sub> <sub><sup>**References**: [[1]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/README.md), [[2]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/checklists/architect-checklist.md), [[3]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/checklists/change-checklist.md), [[4]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/checklists/frontend-architecture-checklist.md), [[5]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/checklists/pm-checklist.md), [[6]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/checklists/po-master-checklist.md), [[7]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/checklists/story-dod-checklist.md), [[8]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/checklists/story-draft-checklist.md), [[9]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/tasks/checklist-mappings.yml), [[10]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/legacy-archive/V2/docs/templates/architect-checklist.md), [[11]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/legacy-archive/V2/docs/templates/pm-checklist.md), [[12]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/legacy-archive/V2/docs/templates/po-checklist.md), [[13]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/legacy-archive/V2/docs/templates/story-draft-checklist.md)</sup></sub>

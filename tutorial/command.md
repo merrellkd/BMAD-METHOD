@@ -1,0 +1,10 @@
+touch
+Chapter1-BMAD-Method,
+Chapter2-Orchestrator,
+Chapter3-Agents-Personas,
+Chapter4-Knowledge-Base,
+Chapter5-Templates,
+Chapter6-Checklists,
+Chapter7-Tasks,
+Chapter8-Documentation-Artifacts,
+Chapter9-Configuration

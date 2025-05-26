@@ -1,0 +1,208 @@
+# Chapter 8: Documentation/Artifacts
+
+Welcome back, Vibe CEO! In our previous chapters, we've introduced the overall [BMAD Method](01_bmad_method_.md), met the [Orchestrator](02_orchestrator_.md) and the specialized [Agents (Personas)](03_agents__personas__.md), learned about the central [Knowledge Base](04_knowledge_base_.md), the structural [Templates](05_templates_.md), the quality-checking [Checklists](06_checklists_.md), and the step-by-step [Tasks](07_tasks_.md) that agents follow.
+
+Now, let's talk about the **stuff** that actually gets created during this process. What are the tangible outputs of the agents' work? What do you, as the project leader, get to see, review, and ultimately build from?
+
+These tangible outputs are the **Documentation and Artifacts**.
+
+## What are Documentation/Artifacts?
+
+Think of Documentation and Artifacts as the **physical evidence** of your project's progress using the BMAD Method. They are the **documents** and **files** that are produced at each stage of the workflow.
+
+They are the things that:
+
+1.  **Record decisions and plans:** Like writing down your initial idea or listing all the features.
+2.  **Describe _what_ to build:** Like specifying the requirements or the technical design.
+3.  **Serve as inputs for the next step:** The output of one agent or phase becomes the starting point for another.
+4.  **Keep everyone aligned:** They are the shared understanding of the project's goals and how to achieve them, understandable by both humans and AI agents.
+
+In traditional software development, these are documents like project proposals, requirements lists, design specs, user stories, test plans, and eventually, the code itself. In the BMAD Method, the AI agents help you generate, refine, and manage these documents systematically.
+
+Let's go back to our simple **To-Do List app** idea. What documents would you expect to see as the project progresses?
+
+- An initial description of the idea.
+- A list of features (add task, mark done, etc.).
+- Notes on how the app will be built technically.
+- Specific instructions for building just the "add task" feature.
+- Eventually, the actual code files.
+
+These are all examples of Documentation/Artifacts.
+
+## Why are Documentation/Artifacts Important?
+
+Documentation and Artifacts are the **core glue** of the BMAD Method workflow.
+
+- **They capture complexity:** A complex idea is broken down and described in detail across different documents.
+- **They provide a shared source of truth:** Instead of relying on scattered notes or chat history, everyone (you and the AI agents) refers to the official documents.
+- **They enable sequential progress:** The [Product Manager](03_agents__personas__.md) can't create a detailed PRD without the initial [Project Brief](08_documentation_artifacts_.md) from the [Analyst](03_agents__personas_.md). The [Developer](03_agents__personas_.md) can't write code without the [User Stories](08_documentation_artifacts_.md) provided by the [Product Owner](03_agents__personas_.md) or [Scrum Master](03_agents__personas_.md).
+- **They are the project history:** They show how the project evolved from the initial idea to the final product.
+
+Without structured documentation, even with powerful AI agents, your project could quickly become disorganized and difficult to manage. The artifacts are the concrete milestones you achieve along the way.
+
+## How are Documentation/Artifacts Created and Used in BMAD?
+
+Documentation/Artifacts are the direct outputs of the AI agents performing their roles and executing [Tasks](07_tasks_.md). They don't appear out of nowhere; they are the result of the agents leveraging other BMAD components:
+
+1.  An agent ([Agent (Persona)](03_agents__personas__.md)) is activated (often via the [Orchestrator](02_orchestrator_.md)).
+2.  The agent receives instructions, often in the form of a [Task](07_tasks_.md), to create a specific document (e.g., the `create-prd.md` Task tells the [Product Manager](03_agents__personas_.md) how to make a PRD).
+3.  The agent uses a [Template](05_templates_.md) file (e.g., `prd-tmpl.md`) to provide the necessary structure for the document.
+4.  The agent populates the template using input from you, information from the [Knowledge Base](04_knowledge_base_.md), and context from previous artifacts (inputs).
+5.  Optionally, the agent uses a [Checklist](06_checklists_.md) (e.g., `pm-checklist.md`) to validate the completeness and quality of the generated document.
+6.  The final document (the Artifact) is saved, typically as a Markdown file, in the project's documentation directory (usually `docs/`).
+7.  This newly created artifact then serves as an input for subsequent [Tasks](07_tasks_.md) performed by other agents in later stages of the workflow.
+
+Here’s a simplified flow showing how artifacts become inputs:
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Analyst as Analyst Agent
+    participant Brief as Project Brief Document
+    participant PMAgent as Product Manager Agent
+    participant PRD as PRD Document
+
+    User->>Analyst: "Create the project brief."
+    activate Analyst
+    Analyst->>Brief: Writes content (using template/task)
+    deactivate Analyst
+    Brief-->>User: Presents draft brief
+    User->>User: Reviews Brief
+    User->>PMAgent: "Create the PRD based on the brief."
+    activate PMAgent
+    PMAgent->>Brief: Reads Brief content (Input)
+    PMAgent->>PRD: Writes content (using template/task, based on Brief)
+    deactivate PMAgent
+    PRD-->>User: Presents draft PRD
+    User->>User: Reviews PRD
+    Note over User: PRD is now an artifact ready for next steps (e.g., Architecture, Stories)
+```
+
+This diagram shows how the Project Brief, once created, becomes an input read by the Product Manager agent when it's time to create the PRD. This dependency and flow of information through documentation is key to the BMAD Method.
+
+## Under the Hood: Documentation as Files
+
+The beauty of Documentation/Artifacts in the BMAD Method is that they are typically stored as simple **Markdown files** right within your project's file system.
+
+Many of the core project documents live in a `docs/` folder in your project root.
+
+```text
+your-project/
+├── bmad-agent/
+│   └── ... (agents, tasks, templates, etc.)
+└── docs/           <-- Your project's documentation lives here
+    ├── architecture.md
+    ├── prd.md
+    ├── project-brief.md
+    ├── index.md      <-- A common artifact that lists other artifacts
+    ├── stories/
+    │   ├── epic1.story1.md
+    │   └── ...
+    └── ... other documents ...
+```
+
+Markdown is used because it's plain text, easy for AI models to read and generate, and human-readable.
+
+Let's look at snippets from the demo files provided (created by the AI agents in a sample run) to see examples of these artifacts:
+
+**1. Project Brief (`demos/v3-output-demo-files/project-brief.md`)** - Created by the [Analyst](03_agents__personas__.md) agent:
+
+```markdown
+# Project Brief: BMad Daily Digest
+
+## 1. Introduction / Problem Statement
+
+- **The Core Idea is**: To create a daily podcast...
+- **The Problem Being Solved is**: Busy professionals... find it hard to keep up...
+
+## 2. Vision & Goals
+
+- **a. Vision**: To become the go-to daily audio source...
+- **b. Primary Goals (for MVP)**:
+  1. Successfully scrape...
+  2. Reliably submit...
+     ...
+```
+
+This artifact captures the initial idea and goals, serving as the foundational document.
+
+**2. Product Requirements Document (PRD) (`demos/v3-output-demo-files/prd.md`)** - Created by the [Product Manager](03_agents__personas__.md) agent (based on the Project Brief):
+
+```markdown
+# BMad Daily Digest Product Requirements Document (PRD)
+
+**Version:** 0.2
+**Date:** May 20, 2025
+**Author:** BMad Project Team...
+
+## 1. Goal, Objective and Context
+
+- **Overall Goal:** To provide busy tech executives...
+- **Project Objective (MVP Focus):** To successfully launch the "BMad Daily Digest" by:
+  _ Automating the daily fetching...
+  _ Processing this content...
+  ...
+```
+
+The PRD expands on the brief, detailing requirements and objectives.
+
+**3. Architecture Document (`demos/v3-output-demo-files/architecture.md`)** - Created by the [Architect](03_agents__personas__.md) agent (based on the PRD):
+
+```markdown
+# BMad Daily Digest Architecture Document
+
+**Version:** 0.1
+**Date:** May 20, 2025
+**Author:** Fred (Architect) & User
+
+## Table of Contents
+
+...
+
+## 3. High-Level Overview
+
+The "BMad Daily Digest" system is architected as a decoupled, serverless application...
+
+- **Backend Architectural Style:** The backend employs a **serverless, event-driven architecture**...
+- **Frontend Architectural Style:** The frontend is a **statically generated site (SSG)** built with Next.js...
+  ...
+```
+
+This document details the technical plan derived from the requirements in the PRD.
+
+**4. Index Document (`demos/v3-output-demo-files/index.md`)** - Often maintained by a [Product Owner](03_agents__personas__.md) or via a specific [Task](07_tasks_.md) (`library-indexing-task.md`):
+
+```markdown
+# BMad Daily Digest Documentation
+
+Welcome to the BMad Daily Digest documentation index. This page provides links to all project documentation.
+
+## Project Overview & Requirements
+
+- [Product Requirements Document (PRD)](./prd.md)
+- [UI/UX Specification](./ux-ui-spec.md)
+- [Architecture Overview](./architecture.md)
+
+## Epics & User Stories
+
+- [Epic 1: Backend Foundation](./epic-1.md) - Backend project setup and "Hello World" API
+  ...
+```
+
+This is a common and very useful artifact that acts as a Table of Contents for your project's documentation, making it easy for both humans and AI agents to find relevant information. The `library-indexing-task.md` is specifically designed to help an agent create or update this index.
+
+The `doc-sharding-task.md` is another example of a task that operates _on_ documentation/artifacts, breaking down large documents into smaller, more manageable "shards" (like `demos/v3-output-demo-files/component-view.md` or `demos/v3-output-demo-files/data-models.md`) to make them easier for AI models to process within context windows.
+
+These files are the tangible results of the BMAD Method in action. They live as simple files, managed through your standard file system and version control (like Git). The AI agents are instructed to read and write these files at appropriate points in the workflow.
+
+## Conclusion
+
+Documentation and Artifacts are the essential, tangible outputs of the BMAD Method workflow. They are the living record of your project, flowing from initial concept documents like the Project Brief to detailed plans like the PRD and Architecture Document, and eventually to user stories and code. By being stored as simple, AI-readable files (primarily Markdown), they serve as the crucial inputs and outputs that guide your AI team through each phase, ensuring everyone (human and AI) stays aligned on what needs to be built and how.
+
+With a clear understanding of the outputs, the final piece of the BMAD puzzle is understanding how everything is configured to work together. In the next chapter, we'll explore [Configuration](09_configuration_.md).
+
+[Configuration](09_configuration_.md)
+
+---
+
+<sub><sup>Generated by [AI Codebase Knowledge Builder](https://github.com/The-Pocket/Tutorial-Codebase-Knowledge).</sup></sub> <sub><sup>**References**: [[1]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/README.md), [[2]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/data/bmad-kb.md), [[3]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/tasks/doc-sharding-task.md), [[4]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/bmad-agent/tasks/library-indexing-task.md), [[5]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/demos/readme.md), [[6]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/demos/v3-output-demo-files/api-reference.md), [[7]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/demos/v3-output-demo-files/architecture.md), [[8]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/demos/v3-output-demo-files/change-log.md), [[9]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/demos/v3-output-demo-files/component-view.md), [[10]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/demos/v3-output-demo-files/data-models.md), [[11]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/demos/v3-output-demo-files/environment-vars.md), [[12]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/demos/v3-output-demo-files/epic-1.md), [[13]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/demos/v3-output-demo-files/epic-2.md), [[14]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/demos/v3-output-demo-files/epic-3.md), [[15]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/demos/v3-output-demo-files/front-end-architecture.md), [[16]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/demos/v3-output-demo-files/index.md), [[17]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/demos/v3-output-demo-files/infra-deployment.md), [[18]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/demos/v3-output-demo-files/key-references.md), [[19]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/demos/v3-output-demo-files/operational-guidelines.md), [[20]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/demos/v3-output-demo-files/prd.draft.md), [[21]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/demos/v3-output-demo-files/prd.md), [[22]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/demos/v3-output-demo-files/project-brief.md), [[23]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/demos/v3-output-demo-files/project-structure.md), [[24]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/demos/v3-output-demo-files/sequence-diagrams.md), [[25]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/demos/v3-output-demo-files/tech-stack.md), [[26]](https://github.com/merrellkd/BMAD-METHOD/blob/83eab78b44e9a929c56a3b20b54d6fa6dd05229f/demos/v3-output-demo-files/ux-ui-spec.md)</sup></sub>
